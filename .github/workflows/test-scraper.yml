@@ -27,12 +27,12 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run scraper (no DB)
-        run: python -m app.runner "${{ inputs.url }}" --limit "${{ inputs.limit }}" --headless --no-save-db
+        run: python -m app.runner "${{ inputs.url }}" --limit "${{ inputs.limit }}" --headless --no-save-db --output app/test/scraped_data.csv
 
       - name: Upload scraped data
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: scraped-data-test
-          path: app/test/scraped_data.json
+          path: app/test/scraped_data.csv
           if-no-files-found: ignore

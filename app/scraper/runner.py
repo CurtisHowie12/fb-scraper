@@ -9,6 +9,7 @@ Usage:
     python -m app.runner "https://www.facebook.com/ads/library/?...=123" --limit 20
 """
 import argparse
+import csv
 import json
 import os
 
@@ -40,6 +41,26 @@ def _resolve_targets(target: str) -> dict[str, list[str]]:
     )
 
 
+def _write_output(all_ads: list[dict], output: str) -> None:
+    out_dir = os.path.dirname(output)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+
+    if output.lower().endswith(".csv"):
+        fieldnames = list(all_ads[0].keys()) if all_ads else []
+        with open(output, "w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for ad in all_ads:
+                row = dict(ad)
+                if isinstance(row.get("platforms"), list):
+                    row["platforms"] = ", ".join(row["platforms"])
+                writer.writerow(row)
+    else:
+        with open(output, "w", encoding="utf-8") as f:
+            json.dump(all_ads, f, ensure_ascii=False, indent=4)
+
+
 def run(target: str, limit: int | None, headless: bool, save_db: bool, output: str | None) -> list[dict]:
     targets = _resolve_targets(target)
     all_ads: list[dict] = []
@@ -57,8 +78,7 @@ def run(target: str, limit: int | None, headless: bool, save_db: bool, output: s
                 print(f"  saved {inserted} ads to database")
 
     if output:
-        with open(output, "w", encoding="utf-8") as f:
-            json.dump(all_ads, f, ensure_ascii=False, indent=4)
+        _write_output(all_ads, output)
         print(f"Wrote {len(all_ads)} ads to {output}")
 
     return all_ads
