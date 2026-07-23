@@ -1,0 +1,42 @@
+name: Scrape Carpe
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # daily at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Max ads to scrape (integer, or 'none' for no limit)"
+        required: false
+        default: "none"
+        type: string
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run carpe scraper
+        env:
+          DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        run: python -m app.runner carpe --limit "${{ inputs.limit || 'none' }}" --headless
+
+      - name: Upload scraped data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-data-carpe
+          path: app/test/scraped_data.json
+          if-no-files-found: ignore

@@ -1,0 +1,9 @@
+.venv
+.env
+.hide
+
+__pycache__/
+*.pyc
+
+app/test/*.json
+app/test

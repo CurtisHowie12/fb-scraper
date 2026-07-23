@@ -1,0 +1,44 @@
+name: General Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Facebook Ads Library URL to scrape"
+        required: true
+        type: string
+      limit:
+        description: "Max ads to scrape (integer, or 'none' for no limit)"
+        required: false
+        default: "10"
+        type: string
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scraper
+        env:
+          DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
+          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        run: python -m app.runner "${{ inputs.url }}" --limit "${{ inputs.limit }}" --headless
+
+      - name: Upload scraped data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraped-data-general
+          path: app/test/scraped_data.json
+          if-no-files-found: ignore
