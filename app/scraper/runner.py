@@ -74,7 +74,7 @@ def run(target: str, limit: int | None, headless: bool, save_db: bool, output: s
 
             if save_db:
                 from app.database.repository import save_ads
-                inserted = save_ads(site_name, ads)
+                inserted = save_ads(site_name, url, ads)
                 print(f"  saved {inserted} ads to database")
 
     if output:
