@@ -1,7 +1,9 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = False) -> list[dict]:
@@ -28,12 +30,21 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
         # Navigate to the website
         driver.get(url)
 
-        time.sleep(6)
-
-        results = driver.find_element(
+        results_locator = (
             "xpath",
             './/div[@class="x8t9es0 x1uxerd5 xrohxju x108nfp6 xq9mrsl x1h4wwuj x117nqv4 xeuugli"]'
-        ).text
+        )
+
+        try:
+            results = WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located(results_locator)
+            ).text
+        except TimeoutException:
+            raise RuntimeError(
+                "Timed out waiting for the ads library results count to appear. "
+                "Facebook may be showing a login/consent wall instead of the ads "
+                f"library page (page title: {driver.title!r})."
+            )
 
         total_results = int(
             results.replace('~', '')
