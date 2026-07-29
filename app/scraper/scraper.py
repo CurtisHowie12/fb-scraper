@@ -271,7 +271,7 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
 
         #     driver.execute_script("arguments[0].click();", close)
             print(f"Done scraping ad page {i+1}")
-            time.sleep(1)
+            time.sleep(3)
 
         return collected_data
 
