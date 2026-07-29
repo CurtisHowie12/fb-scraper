@@ -53,6 +53,9 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
         )
 
         # Scroll only when needed
+        stall_count = 0
+        max_stalls = 2  # consecutive no-growth scrolls tolerated before accepting we've hit bottom (limit=None only)
+
         while True:
 
             compare_result = driver.find_elements(
@@ -62,7 +65,7 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
 
             loaded_result = int(len(compare_result))
 
-            print(f"compare_result: {compare_result}, loaded_result: {loaded_result}")
+
 
             # If user only wants a limited amount
             if data_limit is not None:
@@ -88,7 +91,14 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
 
             # No more ads are loading
             if loaded_result == previous_loaded:
-                break
+                if data_limit is None:
+                    stall_count += 1
+                    if stall_count >= max_stalls:
+                        break
+                else:
+                    break
+            else:
+                stall_count = 0
 
         compare_result = driver.find_elements(
             "xpath",
@@ -249,7 +259,7 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
                         ad_data["multiple_versions"] = True
 
                 collected_data.append(ad_data)
-                time.sleep(10)
+                time.sleep(2)
 
             try:
                 close = driver.find_element(
