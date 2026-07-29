@@ -62,6 +62,8 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
 
             loaded_result = int(len(compare_result))
 
+            print(f"compare_result: {compare_result}, loaded_result: {loaded_result}")
+
             # If user only wants a limited amount
             if data_limit is not None:
                 if loaded_result >= data_limit:
@@ -247,6 +249,7 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
                         ad_data["multiple_versions"] = True
 
                 collected_data.append(ad_data)
+                time.sleep(10)
 
             try:
                 close = driver.find_element(
