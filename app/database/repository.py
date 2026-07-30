@@ -11,6 +11,7 @@ get_db_connection() (db_connection.py) handles connecting via the
 DATABASE_* environment variables.
 """
 import json
+from collections import Counter
 from datetime import datetime
 from urllib.parse import parse_qs, urlparse
 
@@ -52,6 +53,19 @@ def _extract_page_id(url: str, site_name: str) -> str:
     return page_ids[0] if page_ids else site_name
 
 
+def _most_common_page_url(ads: list[dict], default: str) -> str:
+    """Pick the poster_url that shows up most often among the scraped ads.
+
+    Keyword-search sources (no view_all_page_id) can surface ads from
+    several different advertiser pages that merely mention the keyword, so
+    the most frequent poster_url is a better stand-in for "the" advertiser
+    than whichever ad happened to load first."""
+    poster_urls = [ad["poster_url"] for ad in ads if ad.get("poster_url")]
+    if not poster_urls:
+        return default
+    return Counter(poster_urls).most_common(1)[0][0]
+
+
 def _parse_started_running(value: str | None) -> datetime | None:
     """Parse the scraper's "Mar 23, 2026" style date text."""
     if not value:
@@ -78,7 +92,7 @@ def save_ads(site_name: str, source_url: str, ads: list[dict]) -> int:
         return 0
 
     page_id = _extract_page_id(source_url, site_name)
-    page_url = next((ad.get("poster_url") for ad in ads if ad.get("poster_url")), source_url)
+    page_url = _most_common_page_url(ads, default=source_url)
 
     conn = get_db_connection()
     try:
