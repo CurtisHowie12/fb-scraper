@@ -52,9 +52,12 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
                    .replace(' results', '')
         )
 
+        print(f"[debug] reported total_results: {total_results}")
+
         # Scroll only when needed
         stall_count = 0
         max_stalls = 2  # consecutive no-growth scrolls tolerated before accepting we've hit bottom (limit=None only)
+        scroll_attempt = 0
 
         while True:
 
@@ -65,7 +68,8 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
 
             loaded_result = int(len(compare_result))
 
-
+            print(f"[debug] scroll_attempt={scroll_attempt} loaded_result={loaded_result} total_results={total_results} stall_count={stall_count}")
+            scroll_attempt += 1
 
             # If user only wants a limited amount
             if data_limit is not None:
