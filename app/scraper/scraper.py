@@ -56,7 +56,7 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
 
         # Scroll only when needed
         stall_count = 0
-        max_stalls = 2  # consecutive no-growth scrolls tolerated before accepting we've hit bottom (limit=None only)
+        max_stalls = 6  # consecutive no-growth scrolls tolerated before accepting we've hit bottom (limit=None only)
         scroll_attempt = 0
 
         while True:
@@ -84,7 +84,7 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
             previous_loaded = loaded_result
 
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(3)
+            time.sleep(6)
 
             compare_result = driver.find_elements(
                 "xpath",
