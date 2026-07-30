@@ -101,8 +101,10 @@ def main(argv=None) -> None:
     parser.add_argument(
         "--headless",
         action="store_true",
-        default=os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true",
-        help="Run Chrome headless (always forced on in GitHub Actions).",
+        help=(
+            "Run Chrome headless. If omitted, Chrome runs headed, which needs a "
+            "display (e.g. Xvfb) when there's no real monitor, such as in CI."
+        ),
     )
     parser.add_argument("--no-save-db", action="store_true", help="Skip saving results to the database.")
     parser.add_argument(
@@ -112,13 +114,10 @@ def main(argv=None) -> None:
     )
     args = parser.parse_args(argv)
 
-    # Never run a visible browser in CI, regardless of how --headless was passed.
-    headless = args.headless or os.getenv("GITHUB_ACTIONS") == "true"
-
     run(
         target=args.target,
         limit=args.limit,
-        headless=headless,
+        headless=args.headless,
         save_db=not args.no_save_db,
         output=args.output,
     )
