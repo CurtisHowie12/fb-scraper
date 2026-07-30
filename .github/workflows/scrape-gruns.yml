@@ -31,7 +31,7 @@ jobs:
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
           DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        run: python -m app.runner gruns --limit "${{ inputs.limit || 'none' }}" --headless
+        run: python -m app.runner gruns --limit "${{ inputs.limit || 'none' }}"
 
       - name: Upload scraped data
         if: always()

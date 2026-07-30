@@ -6,12 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
-def scrape_ads_library(
-    url: str,
-    data_limit: int | None = 10,
-    headless: bool = False,
-    harden: bool = False,
-) -> list[dict]:
+def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = False) -> list[dict]:
     """
     Scrape a Facebook Ads Library search results page.
 
@@ -19,35 +14,17 @@ def scrape_ads_library(
     data_limit: set to an integer to stop after that many ads, or None to
         scrape everything the page reports.
     headless: run Chrome headless (needed in CI where there is no display).
-    harden: apply anti-fingerprinting tweaks (explicit window size, a normal
-        desktop user-agent, and hiding navigator.webdriver) to make headless
-        Chrome look less like automation. Only worth trying on sites where
-        Facebook appears to be capping results served to CI.
     """
 
     # Set Chrome options for headless mode
     chrome_options = Options()
     if headless:
         chrome_options.add_argument('--headless=new')
-        if harden:
-            chrome_options.add_argument('--window-size=1920,1080')
-            chrome_options.add_argument(
-                'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
-            )
-            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-            chrome_options.add_experimental_option("useAutomationExtension", False)
     else:
         chrome_options.add_argument('--start-maximized')
 
     # Initialize the webdriver with the specified options
     driver = webdriver.Chrome(options=chrome_options)
-
-    if harden:
-        driver.execute_cdp_cmd(
-            "Page.addScriptToEvaluateOnNewDocument",
-            {"source": "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"},
-        )
 
     try:
         # Navigate to the website

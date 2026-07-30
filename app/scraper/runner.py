@@ -68,12 +68,7 @@ def run(target: str, limit: int | None, headless: bool, save_db: bool, output: s
     for site_name, urls in targets.items():
         for url in urls:
             print(f"Scraping '{site_name}': {url}")
-            ads = scrape_ads_library(
-                url,
-                data_limit=limit,
-                headless=headless,
-                harden=(site_name == "gruns"),
-            )
+            ads = scrape_ads_library(url, data_limit=limit, headless=headless)
             print(f"  collected {len(ads)} ads")
             all_ads.extend(ads)
 
