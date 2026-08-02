@@ -6,19 +6,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
-def _scroll_down_incrementally(driver, step_px: int = 600, pause: float = 0.3) -> None:
-    """Scroll down in small steps instead of jumping straight to the bottom
-    in one instant JS call, to look more like a real user scrolling."""
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    position = driver.execute_script("return window.pageYOffset")
-
-    while position < last_height:
-        position = min(position + step_px, last_height)
-        driver.execute_script(f"window.scrollTo(0, {position});")
-        time.sleep(pause)
-        last_height = driver.execute_script("return document.body.scrollHeight")
-
-
 def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = False) -> list[dict]:
     """
     Scrape a Facebook Ads Library search results page.
@@ -96,8 +83,8 @@ def scrape_ads_library(url: str, data_limit: int | None = 10, headless: bool = F
 
             previous_loaded = loaded_result
 
-            _scroll_down_incrementally(driver)
-            time.sleep(3)
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(6)
 
             compare_result = driver.find_elements(
                 "xpath",
