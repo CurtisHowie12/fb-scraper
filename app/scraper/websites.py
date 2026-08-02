@@ -2,6 +2,7 @@
 
 Add a new client by adding a key with a list of one or more ads-library URLs.
 """
+from __future__ import annotations
 
 WEBSITES: dict[str, list[str]] = {
     "carpe": [
