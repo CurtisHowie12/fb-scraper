@@ -10,6 +10,8 @@ them.
 get_db_connection() (db_connection.py) handles connecting via the
 DATABASE_* environment variables.
 """
+from __future__ import annotations
+
 import json
 from collections import Counter
 from datetime import datetime

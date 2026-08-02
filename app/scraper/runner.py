@@ -8,6 +8,8 @@ Usage:
     python -m app.runner carpe --limit none   # scrape everything, no cap
     python -m app.runner "https://www.facebook.com/ads/library/?...=123" --limit 20
 """
+from __future__ import annotations
+
 import argparse
 import csv
 import json
