@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(git -C \"c:\\\\Users\\\\calgo\\\\Christan CODE\\\\fb-scraper\" show HEAD --stat)",
-      "Bash(git -C \"c:\\\\Users\\\\calgo\\\\Christan CODE\\\\fb-scraper\" show HEAD:app/scraper/scraper.py)"
-    ]
-  }
-}

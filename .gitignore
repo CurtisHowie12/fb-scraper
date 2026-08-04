@@ -7,3 +7,5 @@ __pycache__/
 
 app/test/*.json
 app/test
+
+.claude
