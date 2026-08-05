@@ -34,7 +34,7 @@ jobs:
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
           DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        run: xvfb-run -a python -m app.runner carpe --limit "${{ inputs.limit || 'none' }}"
+        run: xvfb-run -a python -m app.runner carpe --limit "${{ inputs.limit || 1000 }}"
 
       - name: Upload scraped data
         if: always()
